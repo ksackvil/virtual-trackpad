@@ -1,8 +1,6 @@
 import cv2
-import pyautogui
 import numpy as np
 import mediapipe as mp
-import tensorflow as tf
 from ActuatorInterface import ActuatorInterface
 from keras.models import load_model
 
