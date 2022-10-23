@@ -61,10 +61,9 @@ while True:
 
   elif predicted_gesture_name == 'pick':
     # pick: thumb and index meet, other fingers in, right hand pointing left
-    # ======
-    # ======
-    # the argument of the function is yet filled in
-    act.drag_cursor_to()
+    # dragging destination determined by index tip location
+    act.drag_cursor_to(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width, 
+      hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_height)
 
   # Show the final output
   cv2.imshow("Output", frame) 
