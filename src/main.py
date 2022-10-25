@@ -59,11 +59,39 @@ while True:
     act.move_cursor(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width, 
       hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_height)
 
+  elif predicted_gesture_name == 'pointUp':
+    # pointUp: index up, other fingers in
+    # action for move cursor to destination directly
+    # moving destination determined by index tip location
+    act.move_cursor_to(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width, 
+      hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_height)
+
   elif predicted_gesture_name == 'pick':
     # pick: thumb and index meet, other fingers in, right hand pointing left
+    # action for drag cursor
     # dragging destination determined by index tip location
     act.drag_cursor_to(hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width, 
       hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_height)
+
+  elif predicted_gesture_name == 'pointIn':
+    # pointIn : index toward the screen, other fingers in
+    # action for single left click at currect cursor location
+    act.cursor_click1(side='left')
+
+  elif predicted_gesture_name == 'pointIn2':
+    # pointIn2 : index and middle toward the screen, other fingers in
+    # action for double left click at currect cursor location
+    act.cursor_click2(side='left')
+
+  elif predicted_gesture_name == 'openPalmUp':
+    # openPalmUp: open palm up
+    # action for scroll down by 5 click steps
+    act.cursor_scroll(direc='down')
+  
+  elif predicted_gesture_name == 'openPalmDown':
+    # openPalmDown: open palm down
+    # action for scroll up by 5 click steps
+    act.cursor_scroll(direc='up')
 
   # Show the final output
   cv2.imshow("Output", frame) 

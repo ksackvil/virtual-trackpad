@@ -20,16 +20,26 @@ class ActuatorInterface:
 
   def drag_cursor_to(self, x, y):
     ''' drags crusor toward x, y, pixel location in t sec'''
-    ''' while holding down left mouse button'''
+    '''     while holding down left mouse button'''
+    ''' scrolling can be done by dragging the side slide bar'''
     t = 3
     pyautogui.dragTo(x, y, t)
 
   def cursor_click1(self, side):
     ''' single click at current cursor location'''
-    ''' side is either left or right'''
+    '''     side is either left or right'''
     pyautogui.click(button=side)
 
   def cursor_click2(self, side):
     ''' double click at current cursor location'''
-    ''' side is either left or right'''
+    '''     side is either left or right'''
     pyautogui.doubleClick(button=side)
+
+  def cursor_scroll(self, direc):
+    ''' roll scroll wheel to move page [direc]'''
+    '''     direc is either up or down'''
+    step = 5
+    if direc == 'down':
+      step = -1*step
+    pyautogui.scroll(step)
+    
