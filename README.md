@@ -14,3 +14,8 @@ pip install -r requirements.txt
 ```
 python src/main.py
 ```
+
+## Gesture Recognition Model Training
+ - link to the original repo: https://github.com/kinivi/hand-gesture-recognition-mediapipe
+ - refer to the README.md in the repo for directory structure
+ - refer to the README.md for training procedures
