@@ -15,16 +15,12 @@ class ActuatorInterface:
 
   def move_cursor_to(self, x, y):
     ''' moves cursor position toward x, y pixel location in t sec'''
-    # t = 2
-    # pyautogui.moveTo(x, y, t)
     pyautogui.moveTo(x, y)
 
   def drag_cursor_to(self, x, y):
     ''' drags crusor toward x, y, pixel location in t sec'''
     '''     while holding down left mouse button'''
     ''' scrolling can be done by dragging the side slide bar'''
-    # t = 3
-    # pyautogui.dragTo(x, y, t)
     pyautogui.dragTo(x, y)
 
   def cursor_click1(self, side):
