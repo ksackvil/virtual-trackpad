@@ -512,11 +512,6 @@ def main():
                 most_common_fg_id = Counter(
                     finger_gesture_history).most_common()
 
-                # Map gesture to action
-                if finger_gesture_id == 3:
-                    act.move_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0],
-                    landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1])
-
                 # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
                 debug_image = draw_landmarks(debug_image, landmark_list)
@@ -527,6 +522,18 @@ def main():
                     keypoint_classifier_labels[hand_sign_id],
                     point_history_classifier_labels[most_common_fg_id[0][0]],
                 )
+
+            # Run commands based on gesture 
+            if hand_sign_id == 2:
+                act.move_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0],
+                    landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1])
+            elif hand_sign_id == 3: # point 2 in
+                act.cursor_click1('left')
+            elif hand_sign_id == 4: # palm up
+                act.cursor_scroll(1)
+            elif hand_sign_id == 5: # palm down
+                act.cursor_scroll(-1)
+
         else:
             point_history.append([0, 0])
 
