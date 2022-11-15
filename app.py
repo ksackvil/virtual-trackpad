@@ -21,8 +21,8 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--device", type=int, default=0)
-    parser.add_argument("--width", help='cap width', type=int, default=960)
-    parser.add_argument("--height", help='cap height', type=int, default=540)
+    parser.add_argument("--width", help='cap width', type=int, default=1280)
+    parser.add_argument("--height", help='cap height', type=int, default=720)
 
     parser.add_argument('--use_static_image_mode', action='store_true')
     parser.add_argument("--min_detection_confidence",
@@ -65,7 +65,6 @@ def calc_bounding_rect(image, landmarks):
         landmark_array = np.append(landmark_array, landmark_point, axis=0)
 
     x, y, w, h = cv.boundingRect(landmark_array)
-
     return [x, y, x + w, y + h]
 
 
@@ -395,6 +394,7 @@ def draw_info(image, fps, mode, number):
                        cv.LINE_AA)
     return image
 
+
 def main():
     # Argument parsing
     args = get_args()
@@ -413,6 +413,15 @@ def main():
     cap = cv.VideoCapture(cap_device)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+
+    # Center points to map mouse too
+    # NOTE: this is hardcoded to increase FPS, may need to change this for different machine
+    image_width = 1280
+    image_height = 720
+    center_rect_x0 = int(image_width/2 - 100)
+    center_rect_y0 = int(image_height/2 - 150)
+    center_rect_x1 = int(image_width/2 + 100)
+    center_rect_y1 = int(image_height/2)
 
     # Mediapipe Model load
     mp_hands = mp.solutions.hands
@@ -451,6 +460,8 @@ def main():
 
     # Finger gesture history
     finger_gesture_history = deque(maxlen=history_length)
+
+    hand_sign_history = deque(maxlen=5)
 
     mode = 0
 
@@ -523,11 +534,14 @@ def main():
                     point_history_classifier_labels[most_common_fg_id[0][0]],
                 )
 
+            hand_sign_history.append(hand_sign_id)
+
             # Run commands based on gesture 
-            if hand_sign_id == 2:
-                act.move_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0],
-                    landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1])
-            elif hand_sign_id == 3: # point 2 in
+            if hand_sign_id == 0: # point up
+                act.move_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0], landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1])
+            elif hand_sign_id == 7 and all(x == 7 for x in hand_sign_history): # L 
+                act.drag_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0], landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1], 'left')
+            elif hand_sign_id == 7:
                 act.cursor_click1('left')
             elif hand_sign_id == 4: # palm up
                 act.cursor_scroll(1)
@@ -539,6 +553,9 @@ def main():
 
         debug_image = draw_point_history(debug_image, point_history)
         debug_image = draw_info(debug_image, fps, mode, number)
+
+        ##### Mouse mover helper
+        cv.rectangle(debug_image, (center_rect_x0, center_rect_y0), (center_rect_x1, center_rect_y1), (0, 0, 0), 1)
 
         # Screen reflection #############################################################
         cv.imshow('Hand Gesture Recognition', debug_image)

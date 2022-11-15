@@ -1,35 +1,75 @@
 import pyautogui
-import numpy as np
+from datetime import datetime
 
 class ActuatorInterface:
     def __init__(self):
         self.scroll_delta = 2.5
-        self.prev_pointer_landmark_x = 0
-        self.prev_pointer_landmark_y = 0
+        self.image_width = 1280
+        self.image_height = 720
+        self.screen_width = 1680
+        self.scree_height = 1050
+        self.center_rect_x0 = int(self.image_width/2 - 100)
+        self.center_rect_y0 = int(self.image_height/2 - 150)
+        self.center_rect_x1 = int(self.image_width/2 + 100)
+        self.center_rect_y1 = int(self.image_height/2)
+        self.last_click_ts = 0
+        self.debounce_time = 1 # 1 second
 
-    def move_cursor(self, x, y):
-        ''' moves current cursor position by x_push and y_push pixels'''
-        x_push = x - self.prev_pointer_landmark_x
-        y_push = y - self.prev_pointer_landmark_y
-        pyautogui.move(x_push, y_push)
-        self.prev_pointer_landmark_x = x
-        self.prev_pointer_landmark_y = y
+    def normalize(self, values, bounds):
+        return [bounds['desired']['lower'] + (x - bounds['actual']['lower']) * (bounds['desired']['upper'] - bounds['desired']['lower']) / (bounds['actual']['upper'] - bounds['actual']['lower']) for x in values]
+
 
     def move_cursor_to(self, x, y):
         ''' moves cursor position toward x, y pixel location in t sec'''
-        print(x, y)
-        pyautogui.moveTo(x, y)
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
 
-    def drag_cursor_to(self, x, y):
-        ''' drags crusor toward x, y, pixel location in t sec'''
-        '''     while holding down left mouse button'''
-        ''' scrolling can be done by dragging the side slide bar'''
-        pyautogui.dragTo(x, y)
+        # debounce number of clicks
+        if abs(ts - self.last_click_ts) > self.debounce_time:
+            [x] = self.normalize(
+                [x],
+                {'actual': {'lower': self.center_rect_x0, 'upper': self.center_rect_x1}, 
+                'desired': {'lower': 0, 'upper': self.screen_width}}
+            )
+            [y] = self.normalize(
+                [y],
+                {'actual': {'lower': self.center_rect_y0, 'upper': self.center_rect_y1}, 
+                'desired': {'lower': 0, 'upper': self.scree_height}}
+            )
+            pyautogui.moveTo(x, y)
 
     def cursor_click1(self, side):
         ''' single click at current cursor location'''
         '''     side is either left or right'''
-        pyautogui.click(button=side)
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+
+        # debounce number of clicks
+        if abs(ts - self.last_click_ts) > self.debounce_time:
+            pyautogui.click(button=side)
+            self.last_click_ts = ts
+
+    def drag_cursor_to(self, x, y, side):
+        ''' drags crusor toward x, y, pixel location in t sec  while holding down left mouse button
+        scrolling can be done by dragging the side slide bar'''
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+        
+        if abs(ts - self.last_click_ts) > self.debounce_time:
+            [x] = self.normalize(
+                [x],
+                {'actual': {'lower': self.center_rect_x0, 'upper': self.center_rect_x1}, 
+                'desired': {'lower': 0, 'upper': self.screen_width}}
+            )
+            [y] = self.normalize(
+                [y],
+                {'actual': {'lower': self.center_rect_y0, 'upper': self.center_rect_y1}, 
+                'desired': {'lower': 0, 'upper': self.scree_height}}
+            )
+            pyautogui.dragTo(x, y, button=side)
 
     def cursor_click2(self, side):
         ''' double click at current cursor location'''
