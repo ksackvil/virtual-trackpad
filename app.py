@@ -543,6 +543,8 @@ def main():
                 act.drag_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0], landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1], 'left')
             elif hand_sign_id == 7:
                 act.cursor_click1('left')
+            elif hand_sign_id == 1: # L2
+                act.cursor_click1('right')
             elif hand_sign_id == 4: # palm up
                 act.cursor_scroll(1)
             elif hand_sign_id == 5: # palm down
