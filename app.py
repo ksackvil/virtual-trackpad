@@ -423,6 +423,16 @@ def main():
     center_rect_x1 = int(image_width/2 + 100)
     center_rect_y1 = int(image_height/2)
 
+    move_id = 0
+    left_click_id = 7
+    right_click_id = 1
+    scroll_up_id = 4
+    scroll_down_id = 5
+    asl_a_id = 8
+    asl_b_id = 9
+    asl_c_id = 6
+
+
     # Mediapipe Model load
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(
@@ -537,18 +547,24 @@ def main():
             hand_sign_history.append(hand_sign_id)
 
             # Run commands based on gesture 
-            if hand_sign_id == 0: # point up
+            if hand_sign_id == move_id:
                 act.move_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0], landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1])
-            elif hand_sign_id == 7 and all(x == 7 for x in hand_sign_history): # L 
+            elif hand_sign_id == left_click_id and all(x == left_click_id for x in hand_sign_history): # L 
                 act.drag_cursor_to(landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][0], landmark_list[mp_hands.HandLandmark.INDEX_FINGER_TIP][1], 'left')
-            elif hand_sign_id == 7:
+            elif hand_sign_id == left_click_id:
                 act.cursor_click1('left')
-            elif hand_sign_id == 1: # L2
+            elif hand_sign_id == right_click_id:
                 act.cursor_click1('right')
-            elif hand_sign_id == 4: # palm up
+            elif hand_sign_id == scroll_up_id:
                 act.cursor_scroll(1)
-            elif hand_sign_id == 5: # palm down
+            elif hand_sign_id == scroll_down_id:
                 act.cursor_scroll(-1)
+            elif hand_sign_id == asl_a_id:
+                act.command_a()
+            elif hand_sign_id == asl_b_id:
+                act.command_v()
+            elif hand_sign_id == asl_c_id:
+                act.command_c()
 
         else:
             point_history.append([0, 0])

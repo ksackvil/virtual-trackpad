@@ -13,7 +13,9 @@ class ActuatorInterface:
         self.center_rect_x1 = int(self.image_width/2 + 100)
         self.center_rect_y1 = int(self.image_height/2)
         self.last_click_ts = 0
-        self.debounce_time = 1 # 1 second
+        self.click_debounce_ts = 1
+        self.last_move_ts = 0
+        self.move_debounce_ts = 0.1 
 
     def normalize(self, values, bounds):
         return [bounds['desired']['lower'] + (x - bounds['actual']['lower']) * (bounds['desired']['upper'] - bounds['desired']['lower']) / (bounds['actual']['upper'] - bounds['actual']['lower']) for x in values]
@@ -26,7 +28,7 @@ class ActuatorInterface:
         ts = datetime.timestamp(dt)
 
         # debounce number of clicks
-        if abs(ts - self.last_click_ts) > self.debounce_time:
+        if abs(ts - self.last_move_ts) > self.move_debounce_ts:
             [x] = self.normalize(
                 [x],
                 {'actual': {'lower': self.center_rect_x0, 'upper': self.center_rect_x1}, 
@@ -38,6 +40,7 @@ class ActuatorInterface:
                 'desired': {'lower': 0, 'upper': self.scree_height}}
             )
             pyautogui.moveTo(x, y)
+            self.last_move_ts = ts
 
     def cursor_click1(self, side):
         ''' single click at current cursor location'''
@@ -47,7 +50,7 @@ class ActuatorInterface:
         ts = datetime.timestamp(dt)
 
         # debounce number of clicks
-        if abs(ts - self.last_click_ts) > self.debounce_time:
+        if abs(ts - self.last_click_ts) > self.click_debounce_ts:
             pyautogui.click(button=side)
             self.last_click_ts = ts
 
@@ -58,7 +61,7 @@ class ActuatorInterface:
         dt = datetime.now()
         ts = datetime.timestamp(dt)
         
-        if abs(ts - self.last_click_ts) > self.debounce_time:
+        if abs(ts - self.last_move_ts) > self.move_debounce_ts:
             [x] = self.normalize(
                 [x],
                 {'actual': {'lower': self.center_rect_x0, 'upper': self.center_rect_x1}, 
@@ -70,6 +73,7 @@ class ActuatorInterface:
                 'desired': {'lower': 0, 'upper': self.scree_height}}
             )
             pyautogui.dragTo(x, y, button=side)
+            self.last_move_ts = ts
 
     def cursor_click2(self, side):
         ''' double click at current cursor location'''
@@ -80,4 +84,30 @@ class ActuatorInterface:
         ''' roll scroll wheel to move page [direc]'''
         '''     direc is either up or down'''
         pyautogui.scroll(direction*self.scroll_delta)
+
+    def command_a(self):
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
         
+        if abs(ts - self.last_click_ts) > self.click_debounce_ts:
+            pyautogui.hotkey('command', 'a')
+            self.last_click_ts = ts
+
+    def command_v(self):
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+        
+        if abs(ts - self.last_click_ts) > self.click_debounce_ts:
+            pyautogui.hotkey('command', 'v')
+            self.last_click_ts = ts
+
+    def command_c(self):
+        # Getting the current date and time
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+        
+        if abs(ts - self.last_click_ts) > self.click_debounce_ts:
+            pyautogui.hotkey('command', 'c')
+            self.last_click_ts = ts
